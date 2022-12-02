@@ -28,8 +28,10 @@ jobs:
           enabled_option=$([ "${{ inputs.enabled_option }}" = "true" ] && echo enabled || echo disabled)
           enabled_option=$([ "${{ inputs.enabled_option }}" = "true" ] && echo enabled)
 
+          echo
           disabled_option=$([ "${{ inputs.disabled_option }}" = "true" ] && echo enabled || echo disabled)
           disabled_option=$([ "${{ inputs.disabled_option }}" = "true" ] && echo enabled)
 
+          echo
           enabled_option_2=$([ "${{ inputs.enabled_option_2 }}" = "true" ] && echo enabled || echo disabled)
           enabled_option_2=$([ "${{ inputs.enabled_option_2 }}" = "true" ] && echo enabled)

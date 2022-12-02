@@ -16,6 +16,14 @@ on:
         type: string
         required: false
         default: true
+      opt_key_provided:
+        type: string
+        required: false
+        default: ""
+      opt_key_empty:
+        type: string
+        required: false
+        default: ""
 
 jobs:
   workflow:
@@ -30,8 +38,12 @@ jobs:
 
           echo
           disabled_option=$([ "${{ inputs.disabled_option }}" = "true" ] && echo enabled || echo disabled)
-          disabled_option=$([ "${{ inputs.disabled_option }}" = "true" ] && echo enabled)
 
           echo
-          enabled_option_2=$([ "${{ inputs.enabled_option_2 }}" = "true" ] && echo enabled || echo disabled)
           enabled_option_2=$([ "${{ inputs.enabled_option_2 }}" = "true" ] && echo enabled)
+
+          echo
+          opt_key_provided=$([ ! -z "${{ inputs.opt_key_provided }}" ] && echo "provided" || echo missing)
+
+          echo
+          opt_key_empty=$([ ! -z "${{ inputs.opt_key_empty }}" ] && echo "provided:${{ inputs.opt_key_empty }}" || echo missing)

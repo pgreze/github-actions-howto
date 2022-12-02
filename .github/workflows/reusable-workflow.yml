@@ -1,0 +1,35 @@
+name: Reusable workflow
+
+on:
+  workflow_call:
+    inputs:
+      key:
+        type: string
+        required: true
+      enabled_option:
+        type: boolean
+        required: false
+      disabled_option:
+        type: boolean
+        required: false
+      enabled_option_2:
+        type: string
+        required: false
+        default: true
+
+jobs:
+  workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve inputs
+        shell: bash
+        run: >
+          echo
+          enabled_option=$([ "${{ inputs.enabled_option }}" = "true" ] && echo enabled || echo disabled)
+          enabled_option=$([ "${{ inputs.enabled_option }}" = "true" ] && echo enabled)
+
+          disabled_option=$([ "${{ inputs.disabled_option }}" = "true" ] && echo enabled || echo disabled)
+          disabled_option=$([ "${{ inputs.disabled_option }}" = "true" ] && echo enabled)
+
+          enabled_option_2=$([ "${{ inputs.enabled_option_2 }}" = "true" ] && echo enabled || echo disabled)
+          enabled_option_2=$([ "${{ inputs.enabled_option_2 }}" = "true" ] && echo enabled)

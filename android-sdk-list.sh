@@ -9,5 +9,4 @@ printf "\n>> Android SDK Build-Tools\n"
 ls $ANDROID_HOME/build-tools/
 
 printf "\n>> Android SDK Platform\n"
-ls $ANDROID_HOME/platforms/
 grep Pkg.Revision $ANDROID_HOME/platforms/*/source.properties

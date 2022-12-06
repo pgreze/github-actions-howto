@@ -11,9 +11,25 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Hello
+      - name: Build args
+        id: build-args
         shell: bash
-        run: echo hello world
+        run: |
+          set -o xtrace
+          ARGS=""
+          if true; then
+            ARGS+=" arg1"
+            ARGS+=" arg2"
+          fi
+          if false; then
+            ARGS+=" arg3"
+          fi
+          echo "ARGS=$ARGS" >> $GITHUB_OUTPUT
+
+      - name: Consume args
+        shell: bash
+        run: |
+          echo "ARGS: ${{ steps.build-args.outputs.ARGS }}"
 
       - name: Android SDK versions
         shell: bash

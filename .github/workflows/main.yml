@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - android-versions
 
 jobs:
   hello:
@@ -13,6 +14,10 @@ jobs:
       - name: Hello
         shell: bash
         run: echo hello world
+
+      - name: Android SDK versions
+        shell: bash
+        run: ./android-sdk-list.sh
 
   reuse-workflow:
     uses: ./.github/workflows/reusable-workflow.yml

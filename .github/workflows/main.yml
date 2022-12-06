@@ -29,7 +29,17 @@ jobs:
       - name: Consume args
         shell: bash
         run: |
-          echo "ARGS: ${{ steps.build-args.outputs.ARGS }}"
+          command() { echo "arg1=$1 arg2=$2 arg3=$3"; }
+
+          # Notice without "..." it will try to run arg1 as the program
+          string="${{ steps.build-args.outputs.ARGS }}"
+          echo "As string: $string"
+          command $string # Output: arg1=arg1 arg2=arg2 arg3=
+          # This is surprising...
+
+          echo "Convert to array"
+          read -a array <<< "${{ steps.build-args.outputs.ARGS }}"
+          command ${array[@]} # Output: arg1=arg1 arg2=arg2 arg3=
 
       - name: Android SDK versions
         shell: bash

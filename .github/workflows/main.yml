@@ -53,13 +53,13 @@ jobs:
       opt_key_provided: hello
     secrets: inherit
 
-  node_matrix_gen:
+  pre_multi_matrix:
     uses: ./.github/workflows/node_matrix_gen.yml
     with:
       node_total: 2
 
   multi_matrix:
-    needs: node_matrix_gen
+    needs: pre_multi_matrix
     uses: ./.github/workflows/multi_matrix.yml
     strategy:
       matrix:
@@ -67,5 +67,27 @@ jobs:
     with:
       key: Value
       suffix: ${{ matrix.suffix }}
-      node_matrix: ${{ needs.node_matrix_gen.outputs.matrix }}
+      node_matrix: ${{ needs.pre_multi_matrix.outputs.matrix }}
     secrets: inherit
+
+  # https://github.com/orgs/community/discussions/25338
+  post_multi_matrix:
+    needs: multi_matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: Consume all artifacts
+        run: |
+          # This will find zip files like: artifacts/Value-1-2/Value-1-2.zip
+          find artifacts/ -type f -name "*.zip" | while read artifact_zip; do
+            artifact_dir="$(dirname $artifact_zip)"
+            echo ">> Extract $artifact_zip in $artifact_dir"
+            unzip "$artifact_zip" -d "$artifact_dir"
+            rm "$artifact_zip"
+          done
+
+          find artifacts/ -type f | while read artifact; do
+            echo "Content of $artifact: $(cat $artifact)"
+          done

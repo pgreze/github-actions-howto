@@ -16,7 +16,10 @@ on:
 jobs:
   workflow:
     runs-on: ubuntu-latest
+    # https://adamtheautomator.com/github-actions-matrix/
+    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix: ${{fromJson(inputs.node_matrix)}}
     steps:
       - name: Resolve inputs
@@ -26,6 +29,31 @@ jobs:
           NODE_TOTAL: ${{ matrix.node_total }}
         run: >
           echo
-          ./gradlew test${{ inputs.key }}${{ inputs.suffix }}
+          test${{ inputs.key }}${{ inputs.suffix }}
           -Pindex=$NODE_INDEX
           -Pcount=$NODE_TOTAL
+          | tee output.txt
+
+          exit $NODE_INDEX
+
+      - name: Prepare artifact
+        id: prepare_artifact
+        shell: bash
+        if: always()
+        run: |
+          artifact="${{ inputs.key }}${{ inputs.suffix }}"
+          artifact+="-${{ matrix.node_index }}"
+          artifact+="-${{ matrix.node_total }}"
+
+          mkdir "$artifact" && mv output.txt "$artifact"
+          zip -r "$artifact.zip" "$artifact"
+
+          echo "artifact_name=$artifact" >> $GITHUB_OUTPUT
+          echo "artifact_path=$artifact.zip" >> $GITHUB_OUTPUT
+
+      - name: Publish artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.prepare_artifact.outputs.artifact_name }}
+          path: ${{ steps.prepare_artifact.outputs.artifact_path }}

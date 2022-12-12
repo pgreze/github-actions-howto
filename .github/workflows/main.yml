@@ -45,8 +45,8 @@ jobs:
         shell: bash
         run: ./android-sdk-list.sh
 
-  reuse-workflow:
-    uses: ./.github/workflows/reusable-workflow.yml
+  reuse_workflow:
+    uses: ./.github/workflows/reusable_workflow.yml
     with:
       key: value
       enabled_option: true
@@ -54,8 +54,21 @@ jobs:
       opt_key_provided: hello
     secrets: inherit
 
-  multi-matrix:
-    uses: ./.github/workflows/multi-matrix.yml
+  prep_multi_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+    steps:
+    - id: set_matrix
+      run: |
+        node_total=4
+        node_index="[ $(seq -s ", " 0 $(( node_total-1 ))) ]"
+        echo "matrix={\"node_index\":$(echo $node_index), \"node_total\":[$(echo $node_total)]}" >> $GITHUB_OUTPUT
+
+  multi_matrix:
+    needs: prep_multi_matrix
+    uses: ./.github/workflows/multi_matrix.yml
     with:
       key: Value
+      node_matrix: ${{ needs.prep_multi_matrix.outputs.matrix }}
     secrets: inherit

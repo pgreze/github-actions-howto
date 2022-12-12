@@ -1,0 +1,30 @@
+name: Multi matrix workflow
+
+on:
+  workflow_call:
+    inputs:
+      key:
+        type: string
+        required: true
+      node_matrix:
+        type: string
+        required: true
+
+jobs:
+  workflow:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        suffix: ["", "Suffix"]
+        ${{fromJson(inputs.node_matrix)}}
+    steps:
+      - name: Resolve inputs
+        shell: bash
+        run: >
+          echo
+          ./gradlew test${{ inputs.key }}${{ matrix.suffix }}
+          -Pindex=$NODE_INDEX
+          -Pcount=$NODE_TOTAL
+        env:
+          NODE_INDEX=${{ matrix.node_index }}
+          NODE_TOTAL=${{ .matrix.node_total }}

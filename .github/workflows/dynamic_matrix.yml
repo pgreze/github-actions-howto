@@ -77,13 +77,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
-        with:
+        with: # TODO: find an equivalent not downloading ALL ARTIFACTS
           path: artifacts
       - name: Consume all artifacts
         shell: bash
         run: |
           # This will find zip files like: artifacts/Value-1-2/Value-1-2.zip
-          find artifacts/ -type f -name "*.zip" | while read artifact_zip; do
+          find artifacts/ -type f -path "*${{ inputs.key }}*.zip" | while read artifact_zip; do
             artifact_dir="$(dirname $artifact_zip)"
             echo ">> Extract $artifact_zip in $artifact_dir"
             unzip "$artifact_zip" -d "$artifact_dir"

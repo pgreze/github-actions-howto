@@ -17,7 +17,7 @@ jobs:
   workflow:
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJson(inputs.node_matrix)}}        
+      matrix: ${{fromJson(inputs.node_matrix)}}
     steps:
       - name: Resolve inputs
         shell: bash

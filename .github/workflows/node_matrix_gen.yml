@@ -1,0 +1,40 @@
+# Extracted from this inline workflow:
+#
+# node_matrix_gen:
+#   runs-on: ubuntu-latest
+#   outputs:
+#     matrix: ${{ steps.set_matrix.outputs.matrix }}
+#   steps:
+#   - id: set_matrix
+#     env:
+#       NODE_TOTAL: 2
+#     run: |
+#       node_index="[ $(seq -s ", " 0 $(( $NODE_TOTAL-1 ))) ]"
+#       echo "matrix={\"node_index\":$(echo $node_index), \"node_total\":[$(echo $NODE_TOTAL)]}" | tee $GITHUB_OUTPUT
+
+name: Generate node based matrix
+
+on:
+  workflow_call:
+    inputs:
+      node_total:
+        type: string
+        required: true
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-outputs-from-a-reusable-workflow
+    outputs:
+      matrix:
+        description: JSON with node_index/node_total keys
+        value: ${{ jobs.workflow.outputs.matrix }}
+
+jobs:
+  workflow:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen_matrix.outputs.matrix }}
+    steps:
+      - id: gen_matrix
+        shell: bash
+        run: |
+          node_total=${{ inputs.node_total }}
+          node_index="[ $(seq -s ", " 0 $(( $node_total-1 ))) ]"
+          echo "matrix={\"node_index\":$(echo $node_index), \"node_total\":[$(echo $node_total)]}" | tee $GITHUB_OUTPUT

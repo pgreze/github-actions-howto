@@ -54,20 +54,13 @@ jobs:
       opt_key_provided: hello
     secrets: inherit
 
-  prep_multi_matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set_matrix.outputs.matrix }}
-    steps:
-    - id: set_matrix
-      env:
-        NODE_TOTAL: 2
-      run: |
-        node_index="[ $(seq -s ", " 0 $(( $NODE_TOTAL-1 ))) ]"
-        echo "matrix={\"node_index\":$(echo $node_index), \"node_total\":[$(echo $NODE_TOTAL)]}" >> $GITHUB_OUTPUT
+  node_matrix_gen:
+    uses: ./.github/workflows/node_matrix_gen.yml
+    with:
+      node_total: 2
 
   multi_matrix:
-    needs: prep_multi_matrix
+    needs: node_matrix_gen
     uses: ./.github/workflows/multi_matrix.yml
     strategy:
       matrix:
@@ -75,5 +68,5 @@ jobs:
     with:
       key: Value
       suffix: ${{ matrix.suffix }}
-      node_matrix: ${{ needs.prep_multi_matrix.outputs.matrix }}
+      node_matrix: ${{ needs.node_matrix_gen.outputs.matrix }}
     secrets: inherit

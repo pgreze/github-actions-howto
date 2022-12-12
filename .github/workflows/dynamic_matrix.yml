@@ -1,0 +1,95 @@
+name: Dynamic matrix workflow
+
+on:
+  workflow_call:
+    inputs:
+      key:
+        type: string
+        required: true
+      node_total:
+        type: string
+        required: false
+        default: 2
+
+jobs:
+  pre_workflow:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen_matrix.outputs.matrix }}
+    steps:
+      - name: Generate a dynamic matrix
+        id: gen_matrix
+        shell: bash
+        run: |
+          node_total=${{ inputs.node_total }}
+          node_index="[ $(seq -s ", " 0 $(( $node_total-1 ))) ]"
+          suffix='[ "", "Suffix" ]'
+          echo "matrix={\"node_total\":[$node_total], \"node_index\":$node_index, \"suffix\": $suffix}" | tee $GITHUB_OUTPUT
+
+  workflow:
+    needs: pre_workflow
+    runs-on: ubuntu-latest
+    # https://adamtheautomator.com/github-actions-matrix/
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.pre_workflow.outputs.matrix)}}
+    steps:
+      - name: Main action
+        shell: bash
+        env:
+          NODE_INDEX: ${{ matrix.node_index }}
+          NODE_TOTAL: ${{ matrix.node_total }}
+        run: >
+          echo
+          test${{ inputs.key }}${{ matrix.suffix }}
+          -Pindex=$NODE_INDEX
+          -Pcount=$NODE_TOTAL
+          | tee output.txt
+
+          exit $NODE_INDEX
+
+      - name: Prepare artifact
+        id: prepare_artifact
+        shell: bash
+        if: always()
+        run: |
+          artifact="${{ inputs.key }}${{ matrix.suffix }}"
+          artifact+="-${{ matrix.node_index }}"
+          artifact+="-${{ matrix.node_total }}"
+
+          mkdir "$artifact" && mv output.txt "$artifact"
+          zip -r "$artifact.zip" "$artifact"
+
+          echo "artifact_name=$artifact" >> $GITHUB_OUTPUT
+          echo "artifact_path=$artifact.zip" >> $GITHUB_OUTPUT
+
+      - name: Publish artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.prepare_artifact.outputs.artifact_name }}
+          path: ${{ steps.prepare_artifact.outputs.artifact_path }}
+
+  # https://github.com/orgs/community/discussions/25338
+  post_workflow:
+    needs: workflow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: Consume all artifacts
+        shell: bash
+        run: |
+          # This will find zip files like: artifacts/Value-1-2/Value-1-2.zip
+          find artifacts/ -type f -name "*.zip" | while read artifact_zip; do
+            artifact_dir="$(dirname $artifact_zip)"
+            echo ">> Extract $artifact_zip in $artifact_dir"
+            unzip "$artifact_zip" -d "$artifact_dir"
+            rm "$artifact_zip"
+          done
+
+          find artifacts/ -type f | while read artifact; do
+            echo "Content of $artifact: $(cat $artifact)"
+          done

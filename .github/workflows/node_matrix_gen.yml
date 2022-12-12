@@ -1,4 +1,13 @@
-# Extracted from this inline workflow:
+# Usage:
+#
+# pre_multi_matrix:
+#   uses: ./.github/workflows/node_matrix_gen.yml
+#   with:
+#     node_total: 2
+# ...
+#     node_matrix: ${{ needs.pre_multi_matrix.outputs.matrix }}
+#
+# Inline workflow equivalent:
 #
 # node_matrix_gen:
 #   runs-on: ubuntu-latest

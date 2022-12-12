@@ -60,25 +60,20 @@ jobs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
     steps:
     - id: set_matrix
+      env:
+        NODE_TOTAL: 2
       run: |
-        node_total=2
-        node_index="[ $(seq -s ", " 0 $(( node_total-1 ))) ]"
-        echo "matrix={\"node_index\":$(echo $node_index), \"node_total\":[$(echo $node_total)]}" >> $GITHUB_OUTPUT
+        node_index="[ $(seq -s ", " 0 $(( $NODE_TOTAL-1 ))) ]"
+        echo "matrix={\"node_index\":$(echo $node_index), \"node_total\":[$(echo $NODE_TOTAL)]}" >> $GITHUB_OUTPUT
 
-  multi_matrix_mk:
+  multi_matrix:
     needs: prep_multi_matrix
     uses: ./.github/workflows/multi_matrix.yml
+    strategy:
+      matrix:
+        suffix: [ "", "Suffix" ]
     with:
       key: Value
-      suffix: ""
-      node_matrix: ${{ needs.prep_multi_matrix.outputs.matrix }}
-    secrets: inherit
-
-  multi_matrix_mp:
-    needs: prep_multi_matrix
-    uses: ./.github/workflows/multi_matrix.yml
-    with:
-      key: Value
-      suffix: "Suffix"
+      suffix: ${{ matrix.suffix }}
       node_matrix: ${{ needs.prep_multi_matrix.outputs.matrix }}
     secrets: inherit

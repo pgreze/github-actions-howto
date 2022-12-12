@@ -3,13 +3,16 @@ on:
   push:
     branches:
       - main
-      - android-versions
 
 jobs:
   hello:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Android SDK versions
+        shell: bash
+        run: ./android-sdk-list.sh
 
       - name: Build args
         id: build-args
@@ -40,10 +43,6 @@ jobs:
           echo "Convert to array"
           read -a array <<< "${{ steps.build-args.outputs.ARGS }}"
           command ${array[@]} # Output: arg1=arg1 arg2=arg2 arg3=
-
-      - name: Android SDK versions
-        shell: bash
-        run: ./android-sdk-list.sh
 
   reuse_workflow:
     uses: ./.github/workflows/reusable_workflow.yml

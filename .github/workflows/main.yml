@@ -61,7 +61,7 @@ jobs:
     steps:
     - id: set_matrix
       run: |
-        node_total=4
+        node_total=2
         node_index="[ $(seq -s ", " 0 $(( node_total-1 ))) ]"
         echo "matrix={\"node_index\":$(echo $node_index), \"node_total\":[$(echo $node_total)]}" >> $GITHUB_OUTPUT
 

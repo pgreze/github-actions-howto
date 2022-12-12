@@ -87,8 +87,10 @@ jobs:
           directory="${{ steps.download-artifacts.outputs.download-path }}"
 
           printf "\n>> Only keep artifacts for the given key\n"
-          ls "$directory" | grep -v "${{ inputs.key }}" | while read artifact; do
-            echo "Remove $artifact" && rm -rf "$directory/$artifact"
+          for artifact in $(ls "$directory"); do
+            if [[ $artifact =~ "${{ inputs.key }}.*" ]]; then
+              echo "Remove $artifact" && rm -rf "$directory/$artifact"
+            fi
           done
 
           printf "\n>> Extract-Remove all zip files\n" # Exp: artifacts/Value-1-2/Value-1-2.zip

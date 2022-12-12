@@ -54,7 +54,7 @@ jobs:
     secrets: inherit
 
   dynamic_matrix_debug:
-    if: github.ref_type == 'branch' && github.ref_name == 'master'
+    if: github.ref_type == 'branch' && github.ref_name == 'main'
     uses: ./.github/workflows/dynamic_matrix.yml
     with:
       key: Debug

@@ -53,3 +53,9 @@ jobs:
       disabled_option: false
       opt_key_provided: hello
     secrets: inherit
+
+  multi-matrix:
+    uses: ./.github/workflows/multi-matrix.yml
+    with:
+      key: Value
+    secrets: inherit

@@ -65,10 +65,20 @@ jobs:
         node_index="[ $(seq -s ", " 0 $(( node_total-1 ))) ]"
         echo "matrix={\"node_index\":$(echo $node_index), \"node_total\":[$(echo $node_total)]}" >> $GITHUB_OUTPUT
 
-  multi_matrix:
+  multi_matrix_mk:
     needs: prep_multi_matrix
     uses: ./.github/workflows/multi_matrix.yml
     with:
       key: Value
+      suffix: ""
+      node_matrix: ${{ needs.prep_multi_matrix.outputs.matrix }}
+    secrets: inherit
+
+  multi_matrix_mp:
+    needs: prep_multi_matrix
+    uses: ./.github/workflows/multi_matrix.yml
+    with:
+      key: Value
+      suffix: "Suffix"
       node_matrix: ${{ needs.prep_multi_matrix.outputs.matrix }}
     secrets: inherit

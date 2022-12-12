@@ -6,6 +6,9 @@ on:
       key:
         type: string
         required: true
+      suffix:
+        type: string
+        required: true
       node_matrix:
         type: string
         required: true
@@ -14,17 +17,15 @@ jobs:
   workflow:
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        suffix: ["", "Suffix"]
-        ${{fromJson(inputs.node_matrix)}}
+      matrix: ${{fromJson(inputs.node_matrix)}}        
     steps:
       - name: Resolve inputs
         shell: bash
+        env:
+          NODE_INDEX: ${{ matrix.node_index }}
+          NODE_TOTAL: ${{ matrix.node_total }}
         run: >
           echo
-          ./gradlew test${{ inputs.key }}${{ matrix.suffix }}
+          ./gradlew test${{ inputs.key }}${{ inputs.suffix }}
           -Pindex=$NODE_INDEX
           -Pcount=$NODE_TOTAL
-        env:
-          NODE_INDEX=${{ matrix.node_index }}
-          NODE_TOTAL=${{ .matrix.node_total }}

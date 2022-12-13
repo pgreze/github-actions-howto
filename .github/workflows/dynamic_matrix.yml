@@ -47,7 +47,9 @@ jobs:
           -Pcount=$NODE_TOTAL
           | tee output.txt
 
-          exit $NODE_INDEX
+          if [ ${{ inputs.key }} == 'debug' ]; then
+            exit $NODE_INDEX
+          fi
 
       - name: Prepare artifact
         id: prepare_artifact

@@ -57,11 +57,11 @@ jobs:
     if: github.ref_type == 'branch' && github.ref_name == 'main'
     uses: ./.github/workflows/dynamic_matrix.yml
     with:
-      key: Debug
+      key: debug
     secrets: inherit
 
   dynamic_matrix_release:
     uses: ./.github/workflows/dynamic_matrix.yml
     with:
-      key: Release
+      key: release
     secrets: inherit

@@ -77,18 +77,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
-        id: download-artifacts
+        id: download_artifacts
         with: # TODO: find an equivalent not downloading ALL ARTIFACTS
           path: artifacts
-      - name: Consume all artifacts
+
+      - name: Resolve artifacts
+        id: resolve_artifacts
         shell: bash
         run: |
           echo ">> Root of artifacts folder"
-          directory="${{ steps.download-artifacts.outputs.download-path }}"
+          directory="${{ steps.download_artifacts.outputs.download-path }}"
 
           printf "\n>> Only keep artifacts for the given key\n"
           for artifact in $(ls "$directory"); do
-            if [[ $artifact =~ "${{ inputs.key }}.*" ]]; then
+            if [[ $artifact =~ "^${{ inputs.key }}.*" ]]; then
               echo "Remove $artifact" && rm -rf "$directory/$artifact"
             fi
           done
@@ -102,6 +104,24 @@ jobs:
           done
 
           printf "\n>> Consume artifacts\n"
+          failed=false
           find "$directory" -type f | while read artifact; do
             echo "Content of $artifact: $(cat $artifact)"
+            if true; then # TODO: put your custom logic here
+              failed=true
+            fi
           done
+
+          echo "failed=$failed" >> $GITHUB_OUTPUT
+
+      - name: Delete all consumed artifacts
+        uses: jimschubert/delete-artifacts-action@v1
+        with:
+          pattern: "^${{ inputs.key }}.*"
+
+      - name: Fail workflow if condition
+        # Neither == true or == 'true' worked...
+        # https://github.com/actions/runner/issues/1483
+        if: ${{ steps.resolve_artifacts.outputs.failed }}
+        shell: bash
+        run: echo "Fail the workflow considering consumed workflow failed" && exit 1

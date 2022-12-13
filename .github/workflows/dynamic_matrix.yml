@@ -73,6 +73,12 @@ jobs:
           name: ${{ steps.prepare_artifact.outputs.artifact_name }}
           path: ${{ steps.prepare_artifact.outputs.artifact_path }}
 
+      - name: Propagate error
+        id: failure_job
+        if: failure()
+        shell: bash
+        run: echo "failure=true" >> $GITHUB_OUTPUT
+
   # https://github.com/orgs/community/discussions/25338
   post_workflow:
     needs: workflow
@@ -106,15 +112,16 @@ jobs:
           done
 
           printf "\n>> Consume artifacts\n"
-          failed=false
+          # failed=false
           find "$directory" -type f | while read artifact; do
             echo "Content of $artifact: $(cat $artifact)"
-            if true; then # TODO: put your custom logic here
-              failed=true
-            fi
+            # TODO: to be replaced by an artifact related error
+            # if [ ${{ inputs.key }} == 'debug' ]; then
+            #  failed=true
+            # fi
           done
 
-          echo "failed=$failed" >> $GITHUB_OUTPUT
+          # echo "failed=$failed" >> $GITHUB_OUTPUT
 
       - name: Delete all consumed artifacts
         uses: jimschubert/delete-artifacts-action@v1
@@ -124,6 +131,7 @@ jobs:
       - name: Fail workflow if condition
         # Neither == true or == 'true' worked...
         # https://github.com/actions/runner/issues/1483
-        if: ${{ steps.resolve_artifacts.outputs.failed }}
+        # if: ${{ steps.resolve_artifacts.outputs.failed }}
+        if: ${{ needs.workflow.outputs.failure_job }}
         shell: bash
         run: echo "Fail the workflow considering consumed workflow failed" && exit 1

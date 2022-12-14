@@ -95,28 +95,34 @@ jobs:
         id: resolve_artifacts
         shell: bash
         run: |
-          echo ">> Root of artifacts folder"
+          echo "::group::Root of artifacts folder"
           directory="${{ steps.download_artifacts.outputs.download-path }}"
+          echo "::endgroup::"
 
-          printf "\n>> Only keep artifacts for the given key\n"
+          echo "::group::Only keep artifacts for the given key"
           for artifact in $(ls "$directory"); do
             if [[ $artifact =~ "^${{ inputs.key }}.*" ]]; then
               echo "Remove $artifact" && rm -rf "$directory/$artifact"
             fi
           done
+          echo "::endgroup::"
 
-          printf "\n>> Extract-Remove all zip files\n" # Exp: artifacts/Value-1-2/Value-1-2.zip
+          echo "::group::Extract-Remove all zip files" # Exp: artifacts/Value-1-2/Value-1-2.zip
           find "$directory" -type f -name "*.zip" | while read artifact_zip; do
             artifact_dir="$(dirname $artifact_zip)"
             echo "Extract $artifact_zip in $artifact_dir"
             unzip "$artifact_zip" -d "$artifact_dir"
             rm "$artifact_zip"
           done
+          echo "::endgroup::"
 
-          printf "\n>> Consume artifacts\n"
+          echo "::group::Consume artifacts"
           find "$directory" -type f | while read artifact; do
             echo "Content of $artifact: $(cat $artifact)"
           done
+          echo "::endgroup::"
+
+          echo "failed: ${{ needs.workflow.outputs.failed }}"
 
       - name: Delete all consumed artifacts
         uses: jimschubert/delete-artifacts-action@v1

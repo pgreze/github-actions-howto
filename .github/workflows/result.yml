@@ -40,7 +40,11 @@ jobs:
           # Possible values are success, failure, cancelled, or skipped.
           # When a continue-on-error step fails, outcome=failure, conclusion=success
           echo "outcome=${{ steps.culprint.outcome }}" >> $GITHUB_OUTPUT
-          echo "failed=${{ steps.culprint.outcome = 'failed' }}" >> $GITHUB_OUTPUT
+          if [ ${{ steps.culprint.outcome }} = 'failure' ]; then
+            echo "failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "failed=false" >> $GITHUB_OUTPUT
+          fi
 
           # --compact-output is dropping new line characters
           echo "json=$(cat steps.json | jq --compact-output)" >> $GITHUB_OUTPUT

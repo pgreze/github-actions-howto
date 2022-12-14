@@ -68,7 +68,11 @@ jobs:
 
           echo "artifact_name=$artifact" >> $GITHUB_OUTPUT
           echo "artifact_path=$artifact.zip" >> $GITHUB_OUTPUT
-          echo "failed=${{ steps.main_action.outcome = 'failed' }}" >> $GITHUB_OUTPUT
+          if [ ${{ steps.main_action.outcome }} = 'failure' ]; then
+            echo "failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "failed=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Publish artifact
         if: always()

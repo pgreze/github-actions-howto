@@ -47,7 +47,7 @@ jobs:
     needs: job1
     steps:
       - run: |
-        echo ${{ toJSON(needs.job1.outputs) }}
+        echo ${{ needs.job1.outputs }}
         # {
         #   job1: {
         #     result: success,

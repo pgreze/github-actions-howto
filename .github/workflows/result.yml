@@ -8,9 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      success: ${{ steps.job_success.outputs.value }}
-      failure: ${{ steps.job_failure.outputs.value }}
-      always: ${{ steps.job_always.outputs.value }}
+      success: ${{ steps.job_success.outputs.outcome }}
+      failure: ${{ steps.job_failure.outputs.outcome }}
+      always: ${{ steps.job_always.outputs.outcome }}
+      failed: ${{ steps.job_always.outputs.failed }}
       json: ${{ steps.job_always.outputs.json }}
     steps:
       - name: Failing job
@@ -21,55 +22,68 @@ jobs:
         id: job_success
         if: success()
         run: |
-          echo "value=success" >> $GITHUB_OUTPUT
+          echo "outcome=success" >> $GITHUB_OUTPUT
 
       - name: job failure()
         id: job_failure
         if: failure()
         run: |
-          echo "value=failure" >> $GITHUB_OUTPUT
+          echo "outcome=failure" >> $GITHUB_OUTPUT
 
       - name: job always()
         id: job_always
         if: always()
         run: |
           echo '${{ toJSON(steps) }}' | tee steps.json
-          # {
-          #   "culprint": {
-          #     "outputs": {},
-          #     "outcome": "failure",
-          #     "conclusion": "failure"
-          #   },
-          #   "job_success": {
-          #     "outputs": {},
-          #     "outcome": "skipped",
-          #     "conclusion": "skipped"
-          #   },
-          #   "job_failure": {
-          #     "outputs": {
-          #       "value": "failure"
-          #     },
-          #     "outcome": "success",
-          #     "conclusion": "success"
-          #   }
-          # }
 
           # https://docs.github.com/en/actions/learn-github-actions/contexts#jobs-context
           # Possible values are success, failure, cancelled, or skipped.
           # When a continue-on-error step fails, outcome=failure, conclusion=success
-          echo "value=${{ steps.culprint.outcome }}" >> $GITHUB_OUTPUT
+          echo "outcome=${{ steps.culprint.outcome }}" >> $GITHUB_OUTPUT
+          echo "failed=${{ steps.culprint.outcome = 'failed' }}" >> $GITHUB_OUTPUT
 
           # --compact-output is dropping new line characters
           echo "json=$(cat steps.json | jq --compact-output)" >> $GITHUB_OUTPUT
+      # {
+      #   "culprint": {
+      #     "outputs": {},
+      #     "outcome": "failure",
+      #     "conclusion": "failure"
+      #   },
+      #   "job_success": {
+      #     "outputs": {},
+      #     "outcome": "skipped",
+      #     "conclusion": "skipped"
+      #   },
+      #   "job_failure": {
+      #     "outputs": {
+      #       "value": "failure"
+      #     },
+      #     "outcome": "success",
+      #     "conclusion": "success"
+      #   }
+      # }
 
   job2:
     runs-on: ubuntu-latest
     needs: job1
     steps:
-      - run: echo '${{ toJSON(needs.job1) }}'
+      - run: |
+        echo '${{ toJSON(needs.job1) }}'
+
+        echo '${{ needs.job1.json }}'
       # {
-      #   job1: {
-      #     result: success,
-      #     outputs: {}
+      #   "result": "success",
+      #   "outputs": {
+      #     "always": "failure",
+      #     "failure": "failure",
+      #     "json": "{\"culprint\":{\"outputs\":{},\"outcome\":\"failure\",\"conclusion\":\"failure\"},\"job_success\":{\"outputs\":{},\"outcome\":\"skipped\",\"conclusion\":\"skipped\"},\"job_failure\":{\"outputs\":{\"value\":\"failure\"},\"outcome\":\"success\",\"conclusion\":\"success\"}}"
       #   }
       # }
+
+      - name: Fail if failed detected
+        # Neither == true or == 'true' worked...
+        # https://github.com/actions/runner/issues/1483
+        if: ${{ needs.job1.outputs.failed }}
+        shell: bash
+        run: echo "Fail the workflow considering consumed workflow failed" && exit 1

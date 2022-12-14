@@ -34,8 +34,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.pre_workflow.outputs.matrix)}}
+    outputs:
+      failed: ${{ steps.prepare_artifact.outputs.failed }}
     steps:
       - name: Main action
+        id: main_action
         shell: bash
         env:
           NODE_INDEX: ${{ matrix.node_index }}
@@ -65,6 +68,7 @@ jobs:
 
           echo "artifact_name=$artifact" >> $GITHUB_OUTPUT
           echo "artifact_path=$artifact.zip" >> $GITHUB_OUTPUT
+          echo "failed=${{ steps.main_action.outcome = 'failed' }}" >> $GITHUB_OUTPUT
 
       - name: Publish artifact
         if: always()
@@ -106,24 +110,18 @@ jobs:
           done
 
           printf "\n>> Consume artifacts\n"
-          failed=false
           find "$directory" -type f | while read artifact; do
             echo "Content of $artifact: $(cat $artifact)"
-            if true; then # TODO: put your custom logic here
-              failed=true
-            fi
           done
-
-          echo "failed=$failed" >> $GITHUB_OUTPUT
 
       - name: Delete all consumed artifacts
         uses: jimschubert/delete-artifacts-action@v1
         with:
           pattern: "^${{ inputs.key }}.*"
 
-      - name: Fail workflow if condition
+      - name: Fail if failed detected
         # Neither == true or == 'true' worked...
         # https://github.com/actions/runner/issues/1483
-        if: ${{ steps.resolve_artifacts.outputs.failed }}
+        if: ${{ needs.workflow.outputs.failed }}
         shell: bash
         run: echo "Fail the workflow considering consumed workflow failed" && exit 1

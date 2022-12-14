@@ -70,9 +70,10 @@ jobs:
     steps:
     # - run: echo '${{ toJSON(needs.job1) }}' # Only one working with toJSON...
       - run: |
-        echo "outcome: " '${{ needs.job1.outputs.outcome }}'
-        echo "failed: " '${{ needs.job1.outputs.failed }}'
-        echo "json: " '${{ needs.job1.outputs.json }}'
+        echo "outcome: ${{ needs.job1.outputs.outcome }}"
+        echo "failed: ${{ needs.job1.outputs.failed }}"
+        cat '${{ needs.job1.outputs.json }}' > job1.json
+        echo 'json: $(cat job1.json)'
       # {
       #   "result": "success",
       #   "outputs": {

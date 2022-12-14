@@ -68,7 +68,8 @@ jobs:
 
           echo "artifact_name=$artifact" >> $GITHUB_OUTPUT
           echo "artifact_path=$artifact.zip" >> $GITHUB_OUTPUT
-          if [ ${{ steps.main_action.outcome }} = 'failure' ]; then
+          echo "${{ steps.main_action.outcome }} = failure?"
+          if [ ${{ steps.main_action.outcome }} = "failure" ]; then
             echo "failed=true" >> $GITHUB_OUTPUT
           else
             echo "failed=false" >> $GITHUB_OUTPUT
@@ -86,6 +87,8 @@ jobs:
     needs: workflow
     runs-on: ubuntu-latest
     steps:
+      - run: echo '${{ toJSON(needs) }}'
+
       - uses: actions/download-artifact@v3
         id: download_artifacts
         with: # TODO: find an equivalent not downloading ALL ARTIFACTS
@@ -95,9 +98,7 @@ jobs:
         id: resolve_artifacts
         shell: bash
         run: |
-          echo "::group::Root of artifacts folder"
           directory="${{ steps.download_artifacts.outputs.download-path }}"
-          echo "::endgroup::"
 
           echo "::group::Only keep artifacts for the given key"
           for artifact in $(ls "$directory"); do
@@ -107,7 +108,7 @@ jobs:
           done
           echo "::endgroup::"
 
-          echo "::group::Extract-Remove all zip files" # Exp: artifacts/Value-1-2/Value-1-2.zip
+          echo "::group::Extract and remove all zip files" # Exp: artifacts/Value-1-2/Value-1-2.zip
           find "$directory" -type f -name "*.zip" | while read artifact_zip; do
             artifact_dir="$(dirname $artifact_zip)"
             echo "Extract $artifact_zip in $artifact_dir"

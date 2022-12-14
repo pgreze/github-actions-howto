@@ -82,8 +82,9 @@ jobs:
       #   }
       # }
 
+      - run: cat '${{ needs.job1.outputs.json }}' | tee job1.json
       - run: |
-        cat '${{ needs.job1.outputs.json }}' > job1.json
+        echo "Working?"
         echo 'json: $(cat job1.json)'
 
       - name: Fail if failed detected

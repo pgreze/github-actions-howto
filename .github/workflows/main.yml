@@ -58,14 +58,12 @@ jobs:
     secrets: inherit
 
   dynamic_matrix_debug:
-    if: github.ref_type == 'branch' && github.ref_name == 'result-yml'
     uses: ./.github/workflows/dynamic_matrix.yml
     with:
       key: debug
     secrets: inherit
 
   dynamic_matrix_release:
-    if: github.ref_type == 'branch' && github.ref_name == 'result-yml'
     uses: ./.github/workflows/dynamic_matrix.yml
     with:
       key: release

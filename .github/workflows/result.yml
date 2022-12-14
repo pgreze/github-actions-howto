@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: job1
     steps:
-    # - run: echo '${{ toJSON(needs.job1) }}' # The only one working with toJSON...
+      - run: echo '${{ toJSON(needs.job1) }}' # The only one working with toJSON...
       # {
       #   "result": "success",
       #   "outputs": {
@@ -81,7 +81,6 @@ jobs:
       - run: |
         echo "outcome: ${{ needs.job1.outputs.outcome }}"
         echo "failed: ${{ needs.job1.outputs.failed }}"
-        cat ${{ needs.job1.outputs.json }} > job1.json
         echo 'json: $(cat job1.json)'
 
       - name: Fail if failed detected

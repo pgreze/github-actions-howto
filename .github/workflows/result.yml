@@ -10,7 +10,7 @@ jobs:
     outputs:
       success: ${{ steps.job_success.outputs.outcome }}
       failure: ${{ steps.job_failure.outputs.outcome }}
-      always: ${{ steps.job_always.outputs.outcome }}
+      outcome: ${{ steps.job_always.outputs.outcome }}
       failed: ${{ steps.job_always.outputs.failed }}
       json: ${{ steps.job_always.outputs.json }}
     steps:
@@ -68,14 +68,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: job1
     steps:
+    # - run: echo '${{ toJSON(needs.job1) }}' # Only one working with toJSON...
       - run: |
-        echo '${{ toJSON(needs.job1) }}'
-
-        echo '${{ needs.job1.json }}'
+        echo "outcome: " '${{ needs.job1.outputs.outcome }}'
+        echo "failed: " '${{ needs.job1.outputs.failed }}'
+        echo "json: " '${{ needs.job1.outputs.json }}'
       # {
       #   "result": "success",
       #   "outputs": {
-      #     "always": "failure",
+      #     "outcome": "failure",
       #     "failure": "failure",
       #     "json": "{\"culprint\":{\"outputs\":{},\"outcome\":\"failure\",\"conclusion\":\"failure\"},\"job_success\":{\"outputs\":{},\"outcome\":\"skipped\",\"conclusion\":\"skipped\"},\"job_failure\":{\"outputs\":{\"value\":\"failure\"},\"outcome\":\"success\",\"conclusion\":\"success\"}}"
       #   }

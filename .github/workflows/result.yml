@@ -82,10 +82,11 @@ jobs:
       #   }
       # }
 
-      - run: cat '${{ needs.job1.outputs.json }}' | tee job1.json
-      - run: |
-        echo "Working?"
-        echo 'json: $(cat job1.json)'
+      - name: Print values
+        run: |
+          echo "outcome: ${{ needs.job1.outputs.outcome }}"
+          echo "failed: ${{ needs.job1.outputs.failed }}"
+          echo 'json: ${{ needs.job1.outputs.json }}'
 
       - name: Fail if failed detected
         # Neither == true or == 'true' worked...

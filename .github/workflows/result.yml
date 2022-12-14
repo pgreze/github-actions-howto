@@ -1,0 +1,58 @@
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    outputs:
+      success: ${{ steps.job_success.outputs.value }}
+      failure: ${{ steps.job_failure.outputs.value }}
+      always: ${{ steps.job_always.outputs.value }}
+      json: ${{ steps.job_always.outputs.json }}
+    steps:
+      - name: Failing job
+        id: culprint
+        run: exit 1
+
+      - name: job success()
+        id: job_success
+        if: success()
+        run: |
+          echo "${{ toJSON(steps) }}"
+          echo "value=success" >> $GITHUB_OUTPUT
+
+      - name: job failure()
+        id: job_failure
+        if: failure()
+        run: |
+          echo "${{ toJSON(steps) }}"
+          echo "value=failure" >> $GITHUB_OUTPUT
+
+      - name: job always()
+        id: job_always
+        if: always()
+        run: |
+          echo "${{ toJSON(steps) }}"
+          # https://docs.github.com/en/actions/learn-github-actions/contexts#jobs-context
+          # Possible values are success, failure, cancelled, or skipped.
+          # When a continue-on-error step fails, outcome=failure, conclusion=success
+          echo "value=${{ steps.culprint.outcome }}" >> $GITHUB_OUTPUT
+          echo "json=${{ toJSON(steps) }}" >> $GITHUB_OUTPUT
+
+  job2:
+    runs-on: ubuntu-latest
+    needs: job1
+    steps:
+      - run: |
+        echo "${{ toJSON(needs.job1) }}"
+        # {
+        #   job1: {
+        #     result: success,
+        #     outputs: {}
+        #   }
+        # }

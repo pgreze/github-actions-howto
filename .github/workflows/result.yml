@@ -83,10 +83,10 @@ jobs:
       # }
 
       - run: |
-        outcome=${{ needs.job1.outputs.outcome }}
-        echo "outcome: $outcome"
-        failed=${{ needs.job1.outputs.failed }}
-        echo "failed: $failed"
+        # outcome=${{ needs.job1.outputs.outcome }}
+        # echo "outcome: $outcome"
+        # failed=${{ needs.job1.outputs.failed }}
+        # echo "failed: $failed"
         # cat '${{ needs.job1.outputs.json }}' > job1.json
         # echo 'json: $(cat job1.json)'
 

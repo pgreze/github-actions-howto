@@ -21,14 +21,12 @@ jobs:
         id: job_success
         if: success()
         run: |
-          echo '${{ toJSON(steps) }}'
           echo "value=success" >> $GITHUB_OUTPUT
 
       - name: job failure()
         id: job_failure
         if: failure()
         run: |
-          echo '${{ toJSON(steps) }}'
           echo "value=failure" >> $GITHUB_OUTPUT
 
       - name: job always()
@@ -37,22 +35,22 @@ jobs:
         run: |
           echo '${{ toJSON(steps) }}' | tee steps.json
           # {
-          #   culprint: {
-          #     outputs: {},
-          #     outcome: failure,
-          #     conclusion: failure
+          #   "culprint": {
+          #     "outputs": {},
+          #     "outcome": "failure",
+          #     "conclusion": "failure"
           #   },
-          #   job_success: {
-          #     outputs: {},
-          #     outcome: skipped,
-          #     conclusion: skipped
+          #   "job_success": {
+          #     "outputs": {},
+          #     "outcome": "skipped",
+          #     "conclusion": "skipped"
           #   },
-          #   job_failure: {
-          #     outputs: {
-          #       value: failure
+          #   "job_failure": {
+          #     "outputs": {
+          #       "value": "failure"
           #     },
-          #     outcome: success,
-          #     conclusion: success
+          #     "outcome": "success",
+          #     "conclusion": "success"
           #   }
           # }
 
@@ -60,7 +58,9 @@ jobs:
           # Possible values are success, failure, cancelled, or skipped.
           # When a continue-on-error step fails, outcome=failure, conclusion=success
           echo "value=${{ steps.culprint.outcome }}" >> $GITHUB_OUTPUT
-          echo "json=$(cat steps.json)" >> $GITHUB_OUTPUT
+
+          # --compact-output is dropping new line characters
+          echo "json=$(cat steps.json | jq --compact-output)" >> $GITHUB_OUTPUT
 
   job2:
     runs-on: ubuntu-latest

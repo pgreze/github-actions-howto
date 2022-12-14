@@ -133,6 +133,6 @@ jobs:
       - name: Fail if failed detected
         # Neither == true or == 'true' worked...
         # https://github.com/actions/runner/issues/1483
-        if: ${{ needs.workflow.outputs.failed }}
+        if: ${{ needs.workflow.outputs.failed = 'true' }}
         shell: bash
-        run: echo "Fail the workflow considering consumed workflow failed" && exit 1
+        run: echo "Failing due to failed=${{ needs.workflow.outputs.failed }}" && exit 1

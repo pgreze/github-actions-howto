@@ -3,7 +3,7 @@ name: Dynamic matrix workflow
 on:
   workflow_call:
     inputs:
-      key:
+      flavor:
         type: string
         required: true
       node_total:
@@ -12,7 +12,7 @@ on:
         default: 2
 
 jobs:
-  pre_workflow:
+  pre_utests:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.gen_matrix.outputs.matrix }}
@@ -26,16 +26,14 @@ jobs:
           suffix='[ "", "Suffix" ]'
           echo "matrix={\"node_total\":[$node_total], \"node_index\":$node_index, \"suffix\": $suffix}" | tee $GITHUB_OUTPUT
 
-  workflow:
-    needs: pre_workflow
+  utests:
+    needs: pre_utests
     runs-on: ubuntu-latest
     # https://adamtheautomator.com/github-actions-matrix/
     continue-on-error: true
     strategy:
       fail-fast: false
-      matrix: ${{fromJson(needs.pre_workflow.outputs.matrix)}}
-    outputs:
-      failed: ${{ steps.prepare_artifact.outputs.failed }}
+      matrix: ${{fromJson(needs.pre_utests.outputs.matrix)}}
     steps:
       - name: Main action
         id: main_action
@@ -45,12 +43,12 @@ jobs:
           NODE_TOTAL: ${{ matrix.node_total }}
         run: >
           echo
-          test${{ inputs.key }}${{ matrix.suffix }}
+          test${{ inputs.flavor }}${{ matrix.suffix }}
           -Pindex=$NODE_INDEX
           -Pcount=$NODE_TOTAL
           | tee output.txt
 
-          if [ ${{ inputs.key }} == 'debug' ]; then
+          if [ ${{ inputs.flavor }} == 'debug' ]; then
             exit $NODE_INDEX
           fi
 
@@ -59,7 +57,7 @@ jobs:
         shell: bash
         if: always()
         run: |
-          artifact="${{ inputs.key }}${{ matrix.suffix }}"
+          artifact="${{ inputs.flavor }}${{ matrix.suffix }}"
           artifact+="-${{ matrix.node_index }}"
           artifact+="-${{ matrix.node_total }}"
 
@@ -69,11 +67,6 @@ jobs:
           echo "artifact_name=$artifact" >> $GITHUB_OUTPUT
           echo "artifact_path=$artifact.zip" >> $GITHUB_OUTPUT
           echo "${{ steps.main_action.outcome }} = failure?"
-          if [ ${{ steps.main_action.outcome }} = "failure" ]; then
-            echo "failed=true" >> $GITHUB_OUTPUT
-          else
-            echo "failed=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Publish artifact
         if: always()
@@ -83,8 +76,8 @@ jobs:
           path: ${{ steps.prepare_artifact.outputs.artifact_path }}
 
   # https://github.com/orgs/community/discussions/25338
-  post_workflow:
-    needs: workflow
+  post_utests:
+    needs: utests
     runs-on: ubuntu-latest
     steps:
       - run: echo '${{ toJSON(needs) }}'
@@ -102,7 +95,7 @@ jobs:
 
           echo "::group::Only keep artifacts for the given key"
           for artifact in $(ls "$directory"); do
-            if [[ $artifact =~ "^${{ inputs.key }}.*" ]]; then
+            if [[ $artifact =~ "^${{ inputs.flavor }}.*" ]]; then
               echo "Remove $artifact" && rm -rf "$directory/$artifact"
             fi
           done
@@ -123,7 +116,13 @@ jobs:
           done
           echo "::endgroup::"
 
-          if [ ${{ inputs.key }} == 'debug' ]; then
+          curl -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs \
+            > jobs.json
+          outcomes=$(cat jobs.json | jq '[.jobs[] | select(.name|test("^utests_${{ inputs.flavor }} / utests")) | .steps[] | .conclusion] | unique | .[]')
+          if echo $outcomes | grep '"failure"'; then
             echo "failed=true" | tee $GITHUB_OUTPUT
           else
             echo "failed=false" | tee $GITHUB_OUTPUT
@@ -132,7 +131,7 @@ jobs:
       - name: Delete all consumed artifacts
         uses: jimschubert/delete-artifacts-action@v1
         with:
-          pattern: "^${{ inputs.key }}.*"
+          pattern: "^${{ inputs.flavor }}.*"
 
       - name: Fail if failed detected
         # Neither == true or == 'true' worked...

@@ -1,0 +1,100 @@
+name: Result experiments
+
+on:
+  workflow_call:
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    outputs:
+      success: ${{ steps.job_success.outputs.outcome }}
+      failure: ${{ steps.job_failure.outputs.outcome }}
+      outcome: ${{ steps.job_always.outputs.outcome }}
+      failed: ${{ steps.job_always.outputs.failed }}
+      json: ${{ steps.job_always.outputs.json }}
+    steps:
+      - name: Main action
+        id: main_action
+        run: exit 1
+
+      - name: job success()
+        id: job_success
+        if: success()
+        run: |
+          echo "outcome=success" >> $GITHUB_OUTPUT
+
+      - name: job failure()
+        id: job_failure
+        if: failure()
+        run: |
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+
+      - name: job always()
+        id: job_always
+        if: always()
+        run: |
+          echo '${{ toJSON(steps) }}' | tee steps.json
+
+          # https://docs.github.com/en/actions/learn-github-actions/contexts#jobs-context
+          # Possible values are success, failure, cancelled, or skipped.
+          # When a continue-on-error step fails, outcome=failure, conclusion=success
+          echo "outcome=${{ steps.main_action.outcome }}" >> $GITHUB_OUTPUT
+          if [ ${{ steps.main_action.outcome }} = 'failure' ]; then
+            echo "failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "failed=false" >> $GITHUB_OUTPUT
+          fi
+
+          # --compact-output is dropping new line characters
+          echo "json=$(cat steps.json | jq --compact-output)" >> $GITHUB_OUTPUT
+      # {
+      #   "main_action": {
+      #     "outputs": {},
+      #     "outcome": "failure",
+      #     "conclusion": "failure"
+      #   },
+      #   "job_success": {
+      #     "outputs": {},
+      #     "outcome": "skipped",
+      #     "conclusion": "skipped"
+      #   },
+      #   "job_failure": {
+      #     "outputs": {
+      #       "value": "failure"
+      #     },
+      #     "outcome": "success",
+      #     "conclusion": "success"
+      #   }
+      # }
+
+  job2:
+    runs-on: ubuntu-latest
+    needs: job1
+    steps:
+      - run: echo '${{ toJSON(needs.job1) }}'
+      # {
+      #   "result": "success",
+      #   "outputs": {
+      #     "failed": "true",
+      #     "failure": "failure",
+      #     "json": "{\"main_action\":{\"outputs\":{},\"outcome\":\"failure\",\"conclusion\":\"failure\"},\"job_success\":{\"outputs\":{},\"outcome\":\"skipped\",\"conclusion\":\"skipped\"},\"job_failure\":{\"outputs\":{\"outcome\":\"failure\"},\"outcome\":\"success\",\"conclusion\":\"success\"}}",
+      #     "outcome": "failure"
+      #   }
+      # }
+
+      - name: Print values
+        run: |
+          echo "outcome: ${{ needs.job1.outputs.outcome }}"
+          echo "failed: ${{ needs.job1.outputs.failed }}"
+          echo 'json: ${{ needs.job1.outputs.json }}'
+      # outcome: failure
+      # failed: true
+      # json: {"main_action":{"outputs":{},"outcome":"failure","conclusion":"failure"},"job_success":{"outputs":{},"outcome":"skipped","conclusion":"skipped"},"job_failure":{"outputs":{"outcome":"failure"},"outcome":"success","conclusion":"success"}}
+
+      - name: Fail if failed detected
+        # Neither == true or == 'true' worked...
+        # https://github.com/actions/runner/issues/1483
+        if: ${{ needs.job1.outputs.failed }}
+        shell: bash
+        run: echo "Fail the workflow considering consumed workflow failed" && exit 1

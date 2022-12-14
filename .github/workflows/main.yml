@@ -57,16 +57,16 @@ jobs:
       opt_key_provided: hello
     secrets: inherit
 
-  dynamic_matrix_debug:
+  utests_debug:
     if: github.ref_type == 'branch' && github.ref_name == 'matrix'
-    uses: ./.github/workflows/dynamic_matrix.yml
+    uses: ./.github/workflows/utests.yml
     with:
-      key: debug
+      flavor: debug
     secrets: inherit
 
-  dynamic_matrix_release:
+  utests_release:
     if: github.ref_type == 'branch' && github.ref_name == 'matrix'
-    uses: ./.github/workflows/dynamic_matrix.yml
+    uses: ./.github/workflows/utests.yml
     with:
-      key: release
+      flavor: release
     secrets: inherit

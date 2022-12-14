@@ -58,14 +58,14 @@ jobs:
     secrets: inherit
 
   utests_debug:
-    if: github.ref_type == 'branch' && github.ref_name == 'matrix'
+    if: ${{ github.head_ref == 'matrix' }}
     uses: ./.github/workflows/utests.yml
     with:
       flavor: debug
     secrets: inherit
 
   utests_release:
-    if: github.ref_type == 'branch' && github.ref_name == 'matrix'
+    if: ${{ github.head_ref == 'matrix' }}
     uses: ./.github/workflows/utests.yml
     with:
       flavor: release

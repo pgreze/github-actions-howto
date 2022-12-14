@@ -123,7 +123,11 @@ jobs:
           done
           echo "::endgroup::"
 
-          echo "failed: ${{ needs.workflow.outputs.failed }}"
+          if [ ${{ inputs.key }} == 'debug' ]; then
+            echo "failed=true" | tee $GITHUB_OUTPUT
+          else
+            echo "failed=false" | tee $GITHUB_OUTPUT
+          fi
 
       - name: Delete all consumed artifacts
         uses: jimschubert/delete-artifacts-action@v1
@@ -133,6 +137,6 @@ jobs:
       - name: Fail if failed detected
         # Neither == true or == 'true' worked...
         # https://github.com/actions/runner/issues/1483
-        if: ${{ needs.workflow.outputs.failed == 'true' }}
+        if: ${{ steps.resolve_artifacts.outputs.failed == 'true' }}
         shell: bash
-        run: echo "Failing due to failed=${{ needs.workflow.outputs.failed }}" && exit 1
+        run: exit 1

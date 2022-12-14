@@ -44,6 +44,10 @@ jobs:
           read -a array <<< "${{ steps.build-args.outputs.ARGS }}"
           command ${array[@]} # Output: arg1=arg1 arg2=arg2 arg3=
 
+  result_workflow:
+    uses: ./.github/workflows/result.yml
+    secrets: inherit
+
   reuse_workflow:
     uses: ./.github/workflows/reusable_workflow.yml
     with:

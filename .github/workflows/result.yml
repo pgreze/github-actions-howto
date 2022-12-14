@@ -14,8 +14,8 @@ jobs:
       failed: ${{ steps.job_always.outputs.failed }}
       json: ${{ steps.job_always.outputs.json }}
     steps:
-      - name: Failing job
-        id: culprint
+      - name: Main action
+        id: main_action
         run: exit 1
 
       - name: job success()
@@ -39,8 +39,8 @@ jobs:
           # https://docs.github.com/en/actions/learn-github-actions/contexts#jobs-context
           # Possible values are success, failure, cancelled, or skipped.
           # When a continue-on-error step fails, outcome=failure, conclusion=success
-          echo "outcome=${{ steps.culprint.outcome }}" >> $GITHUB_OUTPUT
-          if [ ${{ steps.culprint.outcome }} = 'failure' ]; then
+          echo "outcome=${{ steps.main_action.outcome }}" >> $GITHUB_OUTPUT
+          if [ ${{ steps.main_action.outcome }} = 'failure' ]; then
             echo "failed=true" >> $GITHUB_OUTPUT
           else
             echo "failed=false" >> $GITHUB_OUTPUT
@@ -49,7 +49,7 @@ jobs:
           # --compact-output is dropping new line characters
           echo "json=$(cat steps.json | jq --compact-output)" >> $GITHUB_OUTPUT
       # {
-      #   "culprint": {
+      #   "main_action": {
       #     "outputs": {},
       #     "outcome": "failure",
       #     "conclusion": "failure"
@@ -78,13 +78,15 @@ jobs:
       #   "outputs": {
       #     "outcome": "failure",
       #     "failure": "failure",
-      #     "json": "{\"culprint\":{\"outputs\":{},\"outcome\":\"failure\",\"conclusion\":\"failure\"},\"job_success\":{\"outputs\":{},\"outcome\":\"skipped\",\"conclusion\":\"skipped\"},\"job_failure\":{\"outputs\":{\"value\":\"failure\"},\"outcome\":\"success\",\"conclusion\":\"success\"}}"
+      #     "json": "{\"main_action\":{\"outputs\":{},\"outcome\":\"failure\",\"conclusion\":\"failure\"},\"job_success\":{\"outputs\":{},\"outcome\":\"skipped\",\"conclusion\":\"skipped\"},\"job_failure\":{\"outputs\":{\"value\":\"failure\"},\"outcome\":\"success\",\"conclusion\":\"success\"}}"
       #   }
       # }
 
       - run: |
-        echo "outcome: ${{ needs.job1.outputs.outcome }}"
-        echo "failed: ${{ needs.job1.outputs.failed }}"
+        outcome=${{ needs.job1.outputs.outcome }}
+        echo "outcome: $outcome"
+        failed=${{ needs.job1.outputs.failed }}
+        echo "failed: $failed"
         # cat '${{ needs.job1.outputs.json }}' > job1.json
         # echo 'json: $(cat job1.json)'
 

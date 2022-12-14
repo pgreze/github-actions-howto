@@ -93,7 +93,7 @@ jobs:
         run: |
           directory="${{ steps.download_artifacts.outputs.download-path }}"
 
-          echo "::group::Only keep artifacts for the given key"
+          echo "::group::Only keep artifacts for the given flavor"
           for artifact in $(ls "$directory"); do
             if [[ $artifact =~ "^${{ inputs.flavor }}.*" ]]; then
               echo "Remove $artifact" && rm -rf "$directory/$artifact"
@@ -135,7 +135,7 @@ jobs:
         with:
           pattern: "^${{ inputs.flavor }}.*"
 
-      - name: Fail if one of utests_${{ inputs.flavor }} job failed
+      - name: Fail if one of 'utests_${{ inputs.flavor }} / utests' job failed
         # Neither == true or == 'true' worked...
         # https://github.com/actions/runner/issues/1483
         if: ${{ steps.resolve_artifacts.outputs.failed == 'true' }}

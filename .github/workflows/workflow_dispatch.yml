@@ -33,11 +33,9 @@ jobs:
     steps:
       - name: Step on demand
         run: |
-          echo "Log level: $LEVEL"
           echo "Text: ${{ inputs.text }} "
-          echo "Tags: $TAGS"
-          echo "Environment: $ENVIRONMENT"
+          env
         env:
-          LEVEL: ${{ inputs.logLevel }}
-          TAGS: ${{ inputs.tags }}
-          ENVIRONMENT: ${{ inputs.environment }}
+          DISPATCH_LEVEL: ${{ inputs.logLevel }}
+          DISPATCH_TAGS: ${{ inputs.tags }}
+          DISPATCH_ENVIRONMENT: ${{ inputs.environment }}

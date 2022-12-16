@@ -14,6 +14,10 @@ on:
         - info
         - warning
         - debug
+      text:
+        description: 'Input text'
+        required: false
+        default: bonjour
       tags:
         description: 'Test scenario tags'
         required: false
@@ -30,6 +34,7 @@ jobs:
       - name: Step on demand
         run: |
           echo "Log level: $LEVEL"
+          echo "Text: ${{ inputs.text }} "
           echo "Tags: $TAGS"
           echo "Environment: $ENVIRONMENT"
         env:

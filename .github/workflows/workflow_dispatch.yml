@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Step on demand
         run: |
-          echo "Text: ${{ inputs.text }} "
+          echo "Text: ${{ inputs.text }}"
           env
         env:
           DISPATCH_LEVEL: ${{ inputs.logLevel }}

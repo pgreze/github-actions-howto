@@ -1,3 +1,5 @@
+name: Workflow on demand (workflow_dispatch)
+
 # Workflow on demand: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#providing-inputs
 # How to run: https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
 on:

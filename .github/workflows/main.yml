@@ -1,3 +1,5 @@
+name: Main workflow
+
 on:
   pull_request:
   push:

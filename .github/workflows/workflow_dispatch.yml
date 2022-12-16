@@ -46,6 +46,7 @@ jobs:
       - name: Step on demand
         run: |
           echo "Text: ${{ inputs.text }}"
+          echo "From workflow: ${{ inputs.from_workflow_call }}"
           env
         env:
           DISPATCH_LEVEL: ${{ inputs.logLevel }}

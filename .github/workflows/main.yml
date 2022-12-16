@@ -1,3 +1,5 @@
+name: Main workflow
+
 on:
   pull_request:
   push:
@@ -69,4 +71,8 @@ jobs:
     uses: ./.github/workflows/utests.yml
     with:
       flavor: release
+    secrets: inherit
+    
+  workflow_dispatch:
+    uses: ./.github/workflows/workflow_dispatch.yml
     secrets: inherit

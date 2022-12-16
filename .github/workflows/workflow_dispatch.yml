@@ -3,6 +3,26 @@ name: Workflow on demand (workflow_dispatch)
 # Workflow on demand: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#providing-inputs
 # How to run: https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
 on:
+  workflow_call:
+    inputs:
+      from_workflow_call:
+        description: 'To know the trigger was workflow_call'
+        required: false
+        default: true
+        type: boolean
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: warning
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+      tags:
+        description: 'Test scenario tags'
+        required: false
+        type: boolean
   workflow_dispatch:
     inputs:
       logLevel:
@@ -26,6 +46,7 @@ on:
         description: 'Environment to run tests against'
         type: environment
         required: true
+        default: Staging
 
 jobs:
   log-the-inputs:

@@ -57,7 +57,7 @@ jobs:
       enabled_option: true
       disabled_option: false
       opt_key_provided: hello
-      not_master: ${{ github.ref_type == 'branch' && github.ref_name != 'master' }}
+      not_master: ${{ github.ref_type == 'branch' && github.ref_name != 'main' }}
     secrets: inherit
 
   utests_debug:

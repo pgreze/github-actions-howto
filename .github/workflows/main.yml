@@ -73,7 +73,3 @@ jobs:
     with:
       flavor: release
     secrets: inherit
-    
-  workflow_dispatch:
-    uses: ./.github/workflows/workflow_dispatch.yml
-    secrets: inherit

@@ -24,6 +24,9 @@ on:
         type: string
         required: false
         default: ""
+      not_master:
+        type: boolean
+        required: true
 
 jobs:
   workflow:
@@ -47,3 +50,6 @@ jobs:
 
           echo
           opt_key_empty=$([ ! -z "${{ inputs.opt_key_empty }}" ] && echo "provided:${{ inputs.opt_key_empty }}" || echo missing)
+
+          echo
+          not_master=${{ inputs.not_master }}

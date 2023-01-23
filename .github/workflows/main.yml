@@ -57,6 +57,7 @@ jobs:
       enabled_option: true
       disabled_option: false
       opt_key_provided: hello
+      not_master: ${{ github.ref_type == 'branch' && github.ref_name != 'main' }}
     secrets: inherit
 
   utests_debug:
@@ -72,7 +73,7 @@ jobs:
     with:
       flavor: release
     secrets: inherit
-    
-  workflow_dispatch:
-    uses: ./.github/workflows/workflow_dispatch.yml
+
+  dispatch:
+    uses: ./.github/workflows/dispatch.yml
     secrets: inherit

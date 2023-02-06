@@ -1,0 +1,29 @@
+name: Lazy generation workflow
+
+on: [push]
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate workflow
+        shell: bash
+        run: |
+          cat > .github/workflows/generated-workflow.yml <<EOF
+          name: Reusable workflow
+          on:
+            workflow_call:
+          jobs:
+            generated:
+              runs-on: ubuntu-latest
+              steps:
+                - name: Resolve inputs
+                  shell: bash
+                  run: echo hello world
+          EOF
+          cat .github/workflows/generated-workflow.yml
+
+  result_workflow:
+    needs: generate
+    uses: ./.github/workflows/generated-workflow.yml
+    secrets: inherit

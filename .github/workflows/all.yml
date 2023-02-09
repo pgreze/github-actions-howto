@@ -1,0 +1,9 @@
+name: I run everywhere
+
+on: [push, pull_request]
+
+jobs:
+  on-success:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Hello world'

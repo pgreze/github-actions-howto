@@ -1,4 +1,4 @@
-# Github Actions HOW TO !!
+# Github Actions HOW TO
 
 Various patterns usable with Github Actions.
 

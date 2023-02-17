@@ -1,7 +1,10 @@
 name: Result experiments
 
 on:
-  workflow_call:
+  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   job1:
@@ -23,17 +26,21 @@ jobs:
         if: success()
         run: |
           echo "outcome=success" >> $GITHUB_OUTPUT
+          echo "success=${{ success() }}" >> $GITHUB_OUTPUT
 
       - name: job failure()
         id: job_failure
         if: failure()
         run: |
           echo "outcome=failure" >> $GITHUB_OUTPUT
+          echo "failure=${{ failure() }}" >> $GITHUB_OUTPUT
 
       - name: job always()
         id: job_always
         if: always()
         run: |
+          echo "success() = ${{ success() }}"
+          echo "failure() = ${{ failure() }}"
           echo '${{ toJSON(steps) }}' | tee steps.json
 
           # https://docs.github.com/en/actions/learn-github-actions/contexts#jobs-context

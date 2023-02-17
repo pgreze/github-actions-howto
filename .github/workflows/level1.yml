@@ -1,0 +1,16 @@
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  level1-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: echo "Hello from level 1"
+
+  level1-uses:
+    uses: ./.github/workflows/level2.yml
+    secrets: inherit

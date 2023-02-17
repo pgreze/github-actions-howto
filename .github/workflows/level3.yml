@@ -1,0 +1,14 @@
+on: [workflow_call]
+
+jobs:
+  level3-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: echo "Hello from level 3"
+
+  level3-world:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: echo "End of the hierarchy"

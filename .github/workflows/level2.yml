@@ -1,0 +1,12 @@
+on: [workflow_call]
+
+jobs:
+  level2-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: echo "Hello from level 2"
+
+  level2-uses:
+    uses: ./.github/workflows/level3.yml
+    secrets: inherit

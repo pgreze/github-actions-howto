@@ -34,7 +34,13 @@ on:
         required: false
         type: boolean
       environment:
-        description: 'Environment to run tests against'
+        description: |
+          This is a really really really really really really really long description.
+          
+          This is also using multiple lines with *markdown*.
+          This is also using multiple lines with *markdown*.
+          
+          Otsukare sama desu.
         type: environment
         required: true
         default: Staging

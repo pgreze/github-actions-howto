@@ -1,0 +1,14 @@
+name: On push release
+
+on:
+  push:
+    branches:
+      - 'release/[0-9]+\.[0-9]+\.[0-9]+'
+
+jobs:
+  release_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Android SDK versions
+        shell: bash
+        run: echo hello release

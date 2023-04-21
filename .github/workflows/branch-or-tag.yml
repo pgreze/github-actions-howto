@@ -3,6 +3,17 @@ name: Build or publish
 on: [push]
 
 jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: non tag step
+        if: github.ref_type != 'tag'
+        run: env
+
+      - name: tag step
+        if: github.ref_type == 'tag'
+        run: env
+
   build:
     runs-on: ubuntu-latest
     if: github.ref_type != 'tag'

@@ -11,6 +11,6 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: github.ref_type == 'tag' && github.event_name == 'create'
+    if: github.ref_type == 'tag'
     steps:
       - run: env

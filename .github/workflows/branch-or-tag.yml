@@ -1,0 +1,16 @@
+name: Build or publish
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.ref_type != 'tag'
+    steps:
+      - run: env
+
+  publish:
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag' && github.event_name == 'create'
+    steps:
+      - run: env

@@ -19,7 +19,7 @@ jobs:
           import sys
           print("hello from python %s" % sys.version)
 
-      - uses: pgreze/kotlin-main-kts-run@v0.1
+      - uses: pgreze/kotlin-main-kts-run@main
         with:
           script: |
             println("hello from kotlin ${KotlinVersion.CURRENT}")

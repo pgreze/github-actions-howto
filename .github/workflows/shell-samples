@@ -1,0 +1,23 @@
+name: Shell samples
+
+on: [push]
+
+jobs:
+  shell-samples:
+    runs-on: ubuntu-latest
+    steps:
+		- name: Shell bash
+			shell: bash
+			run: echo "hello from bash" && env
+
+		- name: Shell Python
+			shell: python {0}
+			run: |
+        import sys
+        print(f"hello from python {sys.version}")
+
+		- name: Shell Python3
+			shell: python3 {0}
+			run: |
+        import sys
+        print(f"hello from python {sys.version}")

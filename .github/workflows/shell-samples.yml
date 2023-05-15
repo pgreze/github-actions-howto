@@ -21,4 +21,6 @@ jobs:
 
       - uses: pgreze/kotlin-main-kts-run@main
         with:
-          script: println("hello from kotlin ${KotlinVersion.CURRENT}")
+          script: |
+            println("hello from kotlin ${KotlinVersion.CURRENT}")
+            System.err.println("this is an error message")

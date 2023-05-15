@@ -1,4 +1,4 @@
-name: Build or publish
+name: Branch or tag
 
 on: [push]
 

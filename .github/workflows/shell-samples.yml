@@ -20,5 +20,5 @@ jobs:
           print("hello from python %s" % sys.version)
 
       - name: shell kotlinc
-        shell: kotlinc -script {0}
+        shell: kotlinc -script {0}.main.kts
         run: println("hello from kotlin ${KotlinVersion.CURRENT}")

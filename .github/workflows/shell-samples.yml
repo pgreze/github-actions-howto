@@ -1,6 +1,9 @@
 name: Shell samples
 
-on: [push]
+on:
+  push:
+    branches:
+      - 'shell**'
 
 jobs:
   shell-samples:
@@ -14,4 +17,8 @@ jobs:
         shell: python3 {0}
         run: |
           import sys
-          print(f"hello from python {sys.version}")
+          print("hello from python %s" % sys.version)
+
+      - name: shell kotlinc
+        shell: kotlinc -script {0}
+        run: println("hello from kotlin ${KotlinVersion.CURRENT}")

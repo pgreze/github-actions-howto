@@ -24,7 +24,3 @@ jobs:
           script: |
             println("hello from kotlin ${KotlinVersion.CURRENT}")
             System.err.println("this is an error message")
-
-      - uses: pgreze/kotlin-main-kts-run@main
-        with:
-          script: throw kotlin.Exception("error")

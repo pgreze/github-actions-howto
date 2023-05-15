@@ -27,4 +27,4 @@ jobs:
 
       - uses: pgreze/kotlin-main-kts-run@main
         with:
-          script: raise kotlin.Exception("error")
+          script: throw kotlin.Exception("error")

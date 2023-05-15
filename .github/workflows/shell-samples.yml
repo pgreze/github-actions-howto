@@ -1,6 +1,9 @@
 name: Shell samples
 
-on: [push]
+on:
+  push:
+    branches:
+      - 'shell**'
 
 jobs:
   shell-samples:
@@ -14,4 +17,10 @@ jobs:
         shell: python3 {0}
         run: |
           import sys
-          print(f"hello from python {sys.version}")
+          print("hello from python %s" % sys.version)
+
+      - uses: pgreze/kotlin-main-kts-run@main
+        with:
+          script: |
+            println("hello from kotlin ${KotlinVersion.CURRENT}")
+            System.err.println("this is an error message")

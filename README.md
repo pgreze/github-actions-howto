@@ -1,4 +1,4 @@
-# Github Actions how to
+# Github Actions
 
 Various patterns usable with Github Actions.
 

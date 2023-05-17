@@ -1,6 +1,10 @@
 name: Branch or tag
 
-on: [push]
+# on: [push]
+on:
+  push:
+    branches: [ "**push**" ]
+    tags: [ "v**" ]
 
 jobs:
   main:

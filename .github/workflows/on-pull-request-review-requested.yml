@@ -1,0 +1,21 @@
+name: On pull request review requested
+
+on:
+  pull_request_review:
+    types:
+      - requested
+
+permissions:
+  pull-requests: write
+
+jobs:
+  auto_label_myteam:
+    if: ${{ contains(github.event.pull_request.requested_teams.*.slug, myteam) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Add a label when a team is assigned
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: myteam

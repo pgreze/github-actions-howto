@@ -3,7 +3,7 @@ name: On pull request review
 on: pull_request_review
 
 permissions:
-  pull-requests: write # Notify pull request
+  pull-requests: write
 
 jobs:
   when_approved:
@@ -16,14 +16,3 @@ jobs:
         APPROVALS: "1"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ADD_LABEL: "approved"
-
-  auto_label_myteam:
-    if: ${{ contains(github.event.pull_request.requested_teams.*.slug, myteam) }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Add a label when a team is assigned
-        uses: actions-ecosystem/action-add-labels@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: myteam

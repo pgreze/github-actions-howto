@@ -1,0 +1,26 @@
+name: Dispatch optional flag
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: Test mode
+        required: false
+        type: boolean
+        default: false
+jobs:
+  print:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Print flag(s)
+        shell: bash
+        run: |
+          echo "test_mode: ${{ inputs.test_mode }}"
+
+          if [[ "${{ inputs.test_mode }}" = "true" ]]; then
+            echo "Test mode 🚧"
+          else
+            echo "Normal mode 🚀"
+          fi

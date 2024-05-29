@@ -75,7 +75,3 @@ jobs:
   dispatch:
     uses: ./.github/workflows/dispatch.yml
     secrets: inherit
-
-  dispatch_optional_flag:
-    uses: ./.github/workflows/dispatch-optional-flag.yml
-    secrets: inherit

@@ -10,10 +10,6 @@ on:
         required: false
         default: true
         type: boolean
-      tags:
-        description: 'Test scenario tags'
-        required: false
-        type: boolean
   workflow_dispatch:
     inputs:
       logLevel:
@@ -29,6 +25,7 @@ on:
         description: 'Input text'
         required: false
         default: bonjour
+        type: string
       test_mode:
         description: 'Test mode'
         required: false
@@ -57,6 +54,6 @@ jobs:
           DISPATCH_ENVIRONMENT: ${{ inputs.environment }}
         run: |
           echo "Text: ${{ inputs.text }}"
-          echo "Test mode: ${{ inputs.test_mode || 'false' }}
+          echo "Test mode: ${{ inputs.test_mode || 'false' }}"
           echo "From workflow: ${{ inputs.from_workflow_call }}"
           env

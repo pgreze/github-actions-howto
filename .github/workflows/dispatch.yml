@@ -29,9 +29,10 @@ on:
         description: 'Input text'
         required: false
         default: bonjour
-      tags:
-        description: 'Test scenario tags'
+      test_mode:
+        description: 'Test mode'
         required: false
+        default: false
         type: boolean
       environment:
         description: |
@@ -50,11 +51,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Step on demand
-        run: |
-          echo "Text: ${{ inputs.text }}"
-          echo "From workflow: ${{ inputs.from_workflow_call }}"
-          env
         env:
           DISPATCH_LEVEL: ${{ inputs.logLevel }}
           DISPATCH_TAGS: ${{ inputs.tags }}
           DISPATCH_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          echo "Text: ${{ inputs.text }}"
+          echo "Test mode: ${{ inputs.test_mode || 'false' }}
+          echo "From workflow: ${{ inputs.from_workflow_call }}"
+          env

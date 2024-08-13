@@ -1,0 +1,27 @@
+name: Arguments
+
+description: |-
+  Various arguments
+
+inputs:
+  name:
+    description: "The name to congrats"
+    required: true
+  path:
+    description: "The path used to store data"
+    required: true
+
+output:
+  path:
+    description: "The path used to store data"
+    value: ${{ steps.path_resolver.outputs.path_resolver }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: path_resolver
+      shell: bash
+      run: echo "path=${{ inputs.path || "./hello-${{ inputs.name }}" }}" | tee $GITHUB_OUTPUT
+
+    - shell: bash
+      run: echo "hello ${{ inputs.name || "you" }}"

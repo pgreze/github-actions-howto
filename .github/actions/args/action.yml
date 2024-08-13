@@ -11,17 +11,19 @@ inputs:
     description: "The path used to store data"
     required: true
 
-output:
+outputs:
   path:
     description: "The path used to store data"
-    value: ${{ steps.path_resolver.outputs.path_resolver }}
+    value: ${{ steps.path_resolver.outputs.path }}
 
 runs:
   using: "composite"
   steps:
+    - shell: bash
+      run: echo "hello ${{ inputs.name }}"
+
     - id: path_resolver
       shell: bash
-      run: echo "path=${{ inputs.path || "./hello-${{ inputs.name }}" }}" | tee $GITHUB_OUTPUT
-
-    - shell: bash
-      run: echo "hello ${{ inputs.name || "you" }}"
+      run: |
+        PATH="${{ inputs.path }}"
+        echo "path=${PATH:-./default-path}" >> $GITHUB_OUTPUT # or "| tee -a $GITHUB_OUTPUT" if available.

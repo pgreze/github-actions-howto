@@ -20,10 +20,10 @@ runs:
   using: "composite"
   steps:
     - shell: bash
-      run: echo "hello ${{ inputs.name }}"
+      run: echo "hello ${{ inputs.name || 'you' }}"
 
     - id: path_resolver
       shell: bash
-      run: |
-        PATH="${{ inputs.path }}"
-        echo "path=${PATH:-./default-path}" >> $GITHUB_OUTPUT # or "| tee -a $GITHUB_OUTPUT" if available.
+      env:
+        PATH: ${{ inputs.path }}
+      run: echo "path=${PATH:-./default-path}" >> $GITHUB_OUTPUT # or "| tee -a $GITHUB_OUTPUT" if available.

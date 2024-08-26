@@ -11,8 +11,11 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Android SDK versions
-        shell: bash
-        run: ./android-sdk-list.sh
+        run: bash ./android-sdk-list.sh
+
+      - name: Run branch script
+        if: always()
+        run: bash ./hello-from-branch.sh
 
       - name: Build args
         id: build-args

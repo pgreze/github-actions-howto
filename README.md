@@ -1,4 +1,4 @@
-# Github Actions how to supreme
+# Github Actions how to
 
 Various patterns usable with Github Actions.
 

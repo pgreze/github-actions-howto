@@ -1,0 +1,14 @@
+name: hello
+
+description: |-
+  Say hello to someone
+
+inputs:
+  name:
+    description: "The name to say hello to"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: bash "${{ github.actions_path }}/hello.sh" "${{ inputs.name }}"

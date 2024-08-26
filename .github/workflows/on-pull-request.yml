@@ -1,6 +1,6 @@
 name: Main workflow
 
-on: [ pull_request ]
+on: pull_request
 
 jobs:
   hello:
@@ -48,6 +48,21 @@ jobs:
           echo "${{ secrets.SECRET_VALUE }}" | tr '_' ' '
           echo '${{ secrets.SECRET_VALUE }}' | tr '_' ' '
 
+      - name: Run script from .github/scripts
+        if: always()
+        shell: bash
+        run: ./.github/scripts/hello.sh
+
+      - name: Run action from .github/actions
+        if: always()
+        shell: bash
+        run: ./.github/scripts/hello.sh
+
+      - name: Run script outside .github
+        if: always()
+        shell: bash
+        run: scripts/hello.sh
+
   reuse_workflow:
     uses: ./.github/workflows/reusable_workflow.yml
     with:
@@ -58,20 +73,20 @@ jobs:
       not_master: ${{ github.ref_type == 'branch' && github.ref_name != 'main' }}
     secrets: inherit
 
-  utests_debug:
-    if: ${{ github.head_ref == 'matrix' }}
-    uses: ./.github/workflows/utests.yml
-    with:
-      flavor: debug
-    secrets: inherit
+  # utests_debug:
+  #   if: ${{ github.head_ref == 'matrix' }}
+  #   uses: ./.github/workflows/utests.yml
+  #   with:
+  #     flavor: debug
+  #   secrets: inherit
 
-  utests_release:
-    if: ${{ github.head_ref == 'matrix' }}
-    uses: ./.github/workflows/utests.yml
-    with:
-      flavor: release
-    secrets: inherit
+  # utests_release:
+  #   if: ${{ github.head_ref == 'matrix' }}
+  #   uses: ./.github/workflows/utests.yml
+  #   with:
+  #     flavor: release
+  #   secrets: inherit
 
   dispatch:
-    uses: ./.github/workflows/dispatch.yml
+    uses: ./.github/workflows/dispatch-args.yml
     secrets: inherit

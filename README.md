@@ -1,4 +1,4 @@
-# Github Actions how to
+# Github Actions how to test something
 
 Various patterns usable with Github Actions.
 

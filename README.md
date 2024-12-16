@@ -10,4 +10,4 @@ See [dispatch.yml](.github/workflows/dispatch-args.yml) for the declaration:
 
 ## See also
 
-https://github.com/pgreze/circleci-howto
+https://github.com/pgreze/circleci-howto (not active)

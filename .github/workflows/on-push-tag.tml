@@ -1,0 +1,13 @@
+name: on push tag
+
+on:
+  push:
+    tags:
+      - 'v.*'
+
+jobs:
+  print_tag:
+    uses: ./.github/workflows/reusable_workflow.yml
+    with:
+      tag_name: ${{ github.ref_name }}
+    secrets: inherit
